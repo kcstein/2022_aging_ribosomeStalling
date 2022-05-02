@@ -1,0 +1,10 @@
+*.Rproj
+*.Rhistory
+*.RData
+*.Ruserdata
+*.rds
+*.DS_Store
+thumbs.db
+input/
+intermediate/
+output/
