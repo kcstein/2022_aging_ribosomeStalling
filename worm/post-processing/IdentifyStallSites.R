@@ -2,8 +2,6 @@ library(data.table)
 library(ggplot2)
 source('/Users/KevinStein/Desktop/Lab/Bioinformatics/R_scripts/MovingAverage.R')
 N2_dtA <- readRDS("N2_dtA.rds")
-stalling_peaks <- readRDS("stalling_peaks.rds")
-N2_fishers <- readRDS("N2_fishers.rds")
 
 
 ### Tests for overall pausing ###
@@ -26,35 +24,6 @@ wilcox.test(N2_dtA[D1_1A_rpc >= 0.5 & D12_1A_rpc >= 0.5 & D1_2A_rpc >= 0.5 & D12
             N2_dtA[D1_1A_rpc >= 0.5 & D12_1A_rpc >= 0.5 & D1_2A_rpc >= 0.5 & D12_2A_rpc >= 0.5 & position > 5 & stopdist < -5 & residue == "R" &
                      D1_1A > 2 & D1_2A > 2 & D12_1A > 2 & D12_2A > 2]$D12_2A_pause)
 
-ggplot(N2_dtA[D1_1A_rpc >= 0.5 & D12_1A_rpc >= 0.5 & 
-                D1_2A_rpc >= 0.5 & D12_2A_rpc >= 0.5 & 
-                N2_D1_2A_rpc >= 0.5 & N2_D12_2A_rpc >= 0.5 & N2_D6_2A_rpc >= 0.5 &
-                D1_1A_sum >= 64 & D1_2A_sum >= 64 & N2_D1_2A_sum >= 64 &
-                D12_1A_sum >= 64 & D12_2A_sum >= 64 & N2_D12_2A_sum >= 64 &
-                N2_D6_2A_sum >= 64 &
-                position > 100 & stopdist < -30], 
-       aes(D1_1A_pause)) + stat_ecdf(geom = "step", color = "black") +
-  scale_x_log10(limits = c(0.05,30)) +
-  stat_ecdf(aes(D1_2A_pause), geom = "step", color = "black") +
-  stat_ecdf(aes(D12_1A_pause), geom = "step", color = "red") +
-  stat_ecdf(aes(D12_2A_pause), geom = "step", color = "red") +
-  stat_ecdf(aes(N2_D12_2A_pause), geom = "step", color = "orange") +
-  stat_ecdf(aes(N2_D1_2A_pause), geom = "step", color = "gray") +
-  stat_ecdf(aes(N2_D6_2A_pause), geom = "step", color = "blue")
-
-ggplot(N2_dtA[D1_1A_rpc >= 0.5 & D12_1A_rpc >= 0.5 & 
-                D1_2A_rpc >= 0.5 & D12_2A_rpc >= 0.5 & 
-                N2_D1_2A_rpc >= 0.5 & N2_D12_2A_rpc >= 0.5 & N2_D6_2A_rpc >= 0.5 &
-                D1_1A_sum >= 64 & D1_2A_sum >= 64 & N2_D1_2A_sum >= 64 &
-                D12_1A_sum >= 64 & D12_2A_sum >= 64 & N2_D12_2A_sum >= 64 &
-                N2_D6_2A_sum >= 64 & D1_1A_coverage > 0.7 & D1_2A_coverage > 0.7 &
-                D12_1A_coverage > 0.7 & D12_2A_coverage > 0.7 &
-                N2_D6_2A_coverage > 0.7 & 
-                position > 100 & stopdist < -30], 
-       aes(D1_pause)) + stat_ecdf(geom = "step", color = "black") +
-  scale_x_log10(limits = c(0.05,30)) +
-  stat_ecdf(aes(N2_D6_2A_pause), geom = "step", color = "blue") +
-  stat_ecdf(aes(D12_pause), geom = "step", color = "red")
 
 ggplot(N2_dtA[D1_1A_rpc >= 0.5 & D12_1A_rpc >= 0.5 & 
                 D1_2A_rpc >= 0.5 & D12_2A_rpc >= 0.5 & 
@@ -265,115 +234,6 @@ ggplot(stalling_peaks_ageDep_dt[D1_1A_rpc_adjusted >= 1 & D1_2A_rpc_adjusted >= 
 #            fun.args=list(conf.int=0.5), fill = 'red')
 
 
-### Peaks by z-scores
-D1_Zbackground <- N2_dtA[D1_1A_rpc >= 0.5 & D1_2A_rpc >= 0.5 & 
-                           D1_1A_sum >= 64 & D1_2A_sum >= 64 & 
-                           position > 20 & stopdist < -20]
-D1_Zpeaks <- N2_dtA[D1_1A_rpc >= 0.5 & D1_2A_rpc >= 0.5 & 
-                      D1_1A_sum >= 64 & D1_2A_sum >= 64 & 
-                      D1_1A_Z > 3.5 & D1_2A_Z > 3.5 & 
-                      position > 20 & stopdist < -20]
-D6_Zbackground <- N2_dtA[N2_D6_2A_rpc >= 0.5 & 
-                           N2_D6_2A_sum >= 64 & 
-                           position > 20 & stopdist < -20]
-D6_Zpeaks <- N2_dtA[N2_D6_2A_rpc >= 0.5 & 
-                      N2_D6_2A_sum >= 64 & 
-                      N2_D6_2A_Z > 3.5 & 
-                      position > 20 & stopdist < -20]
-D12_Zbackground <- N2_dtA[D12_1A_rpc >= 0.5 & D12_2A_rpc >= 0.5 & 
-                            D12_1A_sum >= 64 & D12_2A_sum >= 64 & 
-                            position > 20 & stopdist < -20]
-D12_Zpeaks <- N2_dtA[D12_1A_rpc >= 0.5 & D12_2A_rpc >= 0.5 & 
-                       D12_1A_sum >= 64 & D12_2A_sum >= 64 & 
-                       D12_1A_Z > 3.5 & D12_2A_Z > 3.5 & 
-                       position > 20 & stopdist < -20]
-
-D1freq <- (summary(D1_Zpeaks$residue) / length(D1_Zpeaks$residue)) / 
-  (summary(D1_Zbackground$residue) / length(D1_Zbackground$residue))
-D6freq <- (summary(D6_Zpeaks$residue) / length(D6_Zpeaks$residue)) / 
-  (summary(D6_Zbackground$residue) / length(D6_Zbackground$residue))
-D12freq <- (summary(D12_Zpeaks$residue) / length(D12_Zpeaks$residue)) / 
-  (summary(D12_Zbackground$residue) / length(D12_Zbackground$residue))
-freq1 <- data.table(age = "D1", residue = names(D1freq), freq = D1freq)
-freq6 <- data.table(age = "D6", residue = names(D6freq), freq = D6freq)
-freq12 <- data.table(age = "D12", residue = names(D12freq), freq = D12freq)
-freq <- rbind(freq1, freq6, freq12)
-freq$age <- factor(freq$age, levels = c("D1", "D6", "D12"))
-
-ggplot(freq[residue != "X"], aes(residue,log2(freq), fill = age)) + 
-  geom_col(position = "dodge") +
-  scale_fill_manual(limits = c("D1", "D6", "D12"), 
-                    labels = c("Day 1", "Day 6", "Day 12"),
-                    values = c("#1F78B4", "#999999", "#E31A1C"), name = "")
-
-### Ribosome collision positions ###
-temp2 <- stalling_peaks_dt[adjusted == -10] # positions 10aa upstream of stall site
-temp2a <- temp2[temp2$ID %in% stalling_peaks$peak_ID] # subset upstream positions to those that are also stall sites
-collisions2 <- stalling_peaks[stalling_peaks$peak_ID %in% temp2a$peak_ID] # obtain stalls that have upstream stall as well
-temp3 <- stalling_peaks_dt[adjusted == -20] # positions 20aa upstream of stall site
-temp3a <- temp3[temp3$ID %in% stalling_peaks$peak_ID] # subset 20aa upstream positions to those that are also stall sites
-collisions3 <- stalling_peaks[(stalling_peaks$peak_ID %in% temp3a$peak_ID) & (stalling_peaks$peak_ID %in% collisions2$peak_ID)] # obtain stalls that have upstream stall as well
-
-write.csv(collisions2, "ribosomeCollisions2.csv")
-write.csv(collisions3, "ribosomeCollisions3.csv")
-
-collisions2_dt <- stalling_peaks_dt[stalling_peaks_dt$peak_ID %in% collisions2$peak_ID]
-collisions3_dt <- stalling_peaks_dt[stalling_peaks_dt$peak_ID %in% collisions3$peak_ID]
-
-ggplot(data = collisions3_dt[D1_1A_rpc_adjusted >= 0.5 & D1_2A_rpc_adjusted >= 0.5 & 
-                             D12_1A_rpc_adjusted >= 0.5 & D12_2A_rpc_adjusted >= 0.5 & 
-                             peak > 25 & (peak - length) < -25,
-                           .(adjusted, D1 = movingAverage(D1_norm, n=1, center=T),
-                             D12 = movingAverage(D12_norm, n=1, center=T))]) + xlim(-40, 40) +
-  stat_summary(aes(adjusted, D1), fun.y = "median", geom = "line", size=0.5, color = 'black') +  
-  #stat_summary(aes(adjusted, D1), fun.data = "median_hilow", geom = "ribbon", alpha = 0.3,
-  #            fun.args=list(conf.int=0.5), fill = 'black') +
-  stat_summary(aes(adjusted, D12), fun.y = "median", geom = "line", size=0.5, color = 'red')
-
-library(RWebLogo)
-weblogo(collisions2$motif3, open = TRUE, file.out = "collisions2.pdf",
-        format = 'pdf', sequence.type = 'protein', alphabet = 'ACDEFGHIKLMNPQRSTVWY',
-        color.scheme = 'chemistry', units = 'probability')
-collisions2a <- collisions2[order(D12_pause, decreasing = TRUE),]
-weblogo(collisions2a[1:30]$motif3, open = TRUE, file.out = "collisions2.pdf",
-        format = 'pdf', sequence.type = 'protein', alphabet = 'ACDEFGHIKLMNPQRSTVWY',
-        color.scheme = 'chemistry', units = 'probability')
-weblogo(collisions3$motif3, open = TRUE, file.out = "collisions3.pdf",
-        format = 'pdf', sequence.type = 'protein', alphabet = 'ACDEFGHIKLMNPQRSTVWY',
-        color.scheme = 'chemistry', units = 'probability')
-collisions3a <- collisions3[order(D12_pause, decreasing = TRUE),]
-weblogo(collisions3a[1:25]$motif3, open = TRUE, file.out = "collisions3.pdf",
-        format = 'pdf', sequence.type = 'protein', alphabet = 'ACDEFGHIKLMNPQRSTVWY',
-        color.scheme = 'chemistry', units = 'probability')
-library(Logolas)
-bg <- c(A=0.06325907,C=0.02076066,D=0.05304005,E=0.06526124,F=0.04787855,G=0.05344524,H=0.02281571,I=0.06213785,K=0.06339429,L=0.08643033,M=0.02648252,N=0.04877476,P=0.04892958,Q=0.04081622,R=0.05137781,S=0.08080618,T=0.05891986,V=0.06229459,W=0.01107328,Y=0.03210222)
-logomaker(collisions2a[1:100]$motif3, type = "EDLogo", bg = bg)
-logomaker(collisions3$motif3, type = "EDLogo", bg = bg)
-
-
-### Ribosome collision positions ###
-stalling_peaks_dt <- readRDS("stalling_peaks_dt.rds")
-temp <- stalling_peaks_dt[adjusted >= -15 & adjusted <= -10]
-temp1 <- temp[temp$ID %in% stalling_peaks$ID]
-collisions <- stalling_peaks_dt[stalling_peaks_dt$peak_ID %in% temp1$peak_ID]
-collisions_orfs <- collisions[, .SD[which.min(peak)], by = orf]
-i <- cbind(match(collisions_orfs$orf, genenames$Transcript.stable.ID))
-collisions_orfs <- cbind(collisions_orfs, WBgene = genenames[i]$Gene.stable.ID)
-i <- cbind(match(collisions_orfs$WBgene, hartl_proteome$WBgene))
-collisions_orfs <- cbind(collisions_orfs, gene = hartl_proteome[i]$gene)
-collisions_orfs <- cbind(collisions_orfs, uniprot = hartl_proteome[i]$uniprot)
-write.csv(collisions_orfs, "ribosomeCollisions.csv")
-
-logomaker(collisions1[D12_pause > 6]$motif3, type = "EDLogo", bg = bg, color_seed = 6)
-
-ggplot(data = collisions[D1_1A_rpc_adjusted >= 0.5 & D1_2A_rpc_adjusted >= 0.5 & 
-                           D12_1A_rpc_adjusted >= 0.5 & D12_2A_rpc_adjusted >= 0.5 & 
-                           peak > 25 & (peak - length) < -25,
-                         .(adjusted, D1 = movingAverage(((D1_1A_norm + D1_2A_norm) / 2), n=2, center=T),
-                           D12 = movingAverage(((D12_1A_norm + D12_2A_norm) / 2), n=2, center=T))]) + xlim(-40, 40) +
-  #stat_summary(aes(adjusted, D1), fun.y = "mean", geom = "line", size=0.5, color = 'black') +  
-  stat_summary(aes(adjusted, D12), fun.y = "mean", geom = "line", size=0.5, color = 'red')
-
 
 ### Stalling at proline ###
 temp <- N2_dtA[motif2 == "PP" & D1_1A_rpc >= 0.5 & D1_2A_rpc >= 0.5 &
@@ -413,67 +273,6 @@ ggplot(data = PP_dt[D1_1A_rpc_adjusted >= 0.1 & D1_2A_rpc_adjusted >= 0.1 &
   stat_summary(aes(adjusted, D12), fun.y = "mean", geom = "line", size=0.5, color = 'red')
 
 
-### Asymmetry around stalls ###
-stalling_peaks_ageDep_dt <- readRDS("stalling_peaks_ageDep_dt.rds")
-test_up <- stalling_peaks_ageDep_dt[adjusted < 0 & adjusted > -50]
-setkeyv(test_up, c("peak_ID"))
-setkeyv(stalling_peaks_ageDep_dt, c("peak_ID"))
-test_up[, D1_1A_rpc_up := mean(D1_1A), by = peak_ID]
-test_up[, D1_2A_rpc_up := mean(D1_2A), by = peak_ID]
-test_up[, D12_1A_rpc_up := mean(D12_1A), by = peak_ID]
-test_up[, D12_2A_rpc_up := mean(D12_2A), by = peak_ID]
-test_up <- test_up[, .SD[which.min(position)], by = peak_ID]
-i <- cbind(match(stalling_peaks_ageDep_dt$peak_ID, test_up$peak_ID))
-stalling_peaks_ageDep_dt <- cbind(stalling_peaks_ageDep_dt, D1_1A_rpc_up = test_up[i]$D1_1A_rpc_up)
-stalling_peaks_ageDep_dt <- cbind(stalling_peaks_ageDep_dt, D1_2A_rpc_up = test_up[i]$D1_2A_rpc_up)
-stalling_peaks_ageDep_dt <- cbind(stalling_peaks_ageDep_dt, D12_1A_rpc_up = test_up[i]$D12_1A_rpc_up)
-stalling_peaks_ageDep_dt <- cbind(stalling_peaks_ageDep_dt, D12_2A_rpc_up = test_up[i]$D12_2A_rpc_up)
-test_down <- stalling_peaks_ageDep_dt[adjusted > 0 & adjusted < 50]
-setkeyv(test_down, c("peak_ID"))
-setkeyv(stalling_peaks_ageDep_dt, c("peak_ID"))
-test_down[, D1_1A_rpc_down := mean(D1_1A), by = peak_ID]
-test_down[, D1_2A_rpc_down := mean(D1_2A), by = peak_ID]
-test_down[, D12_1A_rpc_down := mean(D12_1A), by = peak_ID]
-test_down[, D12_2A_rpc_down := mean(D12_2A), by = peak_ID]
-test_down <- test_down[, .SD[which.min(position)], by = peak_ID]
-i <- cbind(match(stalling_peaks_ageDep_dt$peak_ID, test_down$peak_ID))
-stalling_peaks_ageDep_dt <- cbind(stalling_peaks_ageDep_dt, D1_1A_rpc_down = test_down[i]$D1_1A_rpc_down)
-stalling_peaks_ageDep_dt <- cbind(stalling_peaks_ageDep_dt, D1_2A_rpc_down = test_down[i]$D1_2A_rpc_down)
-stalling_peaks_ageDep_dt <- cbind(stalling_peaks_ageDep_dt, D12_1A_rpc_down = test_down[i]$D12_1A_rpc_down)
-stalling_peaks_ageDep_dt <- cbind(stalling_peaks_ageDep_dt, D12_2A_rpc_down = test_down[i]$D12_2A_rpc_down)
-
-D12_asymmetry <- stalling_peaks_ageDep_dt[adjusted == 0]
-D12_asymmetry[, D1_1A_asymmetry := D1_1A_rpc_up / D1_1A_rpc_down]
-D12_asymmetry[, D1_2A_asymmetry := D1_2A_rpc_up / D1_2A_rpc_down]
-D12_asymmetry[, D12_1A_asymmetry := D12_1A_rpc_up / D12_1A_rpc_down]
-D12_asymmetry[, D12_2A_asymmetry := D12_2A_rpc_up / D12_2A_rpc_down]
-D12_asymmetry[, D1_asymmetry := (D1_1A_asymmetry + D1_2A_asymmetry) / 2]
-D12_asymmetry[, D12_asymmetry := (D12_1A_asymmetry + D12_2A_asymmetry) / 2]
-D12_asymmetry[, position_norm := position / length]
-setkeyv(D12_asymmetry, c("orf"))
-
-ggplot(D12_asymmetry[D1_1A_rpc_up > 1 & D1_2A_rpc_up > 1 &
-                       D12_1A_rpc_up > 1 & D12_2A_rpc_up > 1 &
-                       D1_1A_rpc_down > 1 & D1_2A_rpc_down > 1 &
-                       D12_1A_rpc_down > 1 & D12_2A_rpc_down > 1 & D12_pause >= 10 &
-                       peak > 70 & (peak - length) < -70], aes("D1", D1_asymmetry)) + geom_boxplot() +
-  geom_boxplot(aes("D12", D12_asymmetry)) + ylim(0,3)
-wilcox.test(D12_asymmetry[D1_1A_rpc_up > 0.5 & D1_2A_rpc_up > 0.5 &
-                            D12_1A_rpc_up > 0.5 & D12_2A_rpc_up > 0.5 &
-                            D1_1A_rpc_down > 0.5 & D1_2A_rpc_down > 0.5 &
-                            D12_1A_rpc_down > 0.5 & D12_2A_rpc_down > 0.5 & D12_pause >= 15 &
-                            peak > 70 & (peak - length) < -70]$D1_asymmetry, 
-            D12_asymmetry[D1_1A_rpc_up > 0.5 & D1_2A_rpc_up > 0.5 &
-                            D12_1A_rpc_up > 0.5 & D12_2A_rpc_up > 0.5 &
-                            D1_1A_rpc_down > 0.5 & D1_2A_rpc_down > 0.5 &
-                            D12_1A_rpc_down > 0.5 & D12_2A_rpc_down > 0.5 & D12_pause >= 15 &
-                            peak > 70 & (peak - length) < -70]$D12_asymmetry, alternative = 't')
-
-wilcox.test(D12_asymmetry[D12_pause >= 10]$D1_asymmetry, 
-            D12_asymmetry[D12_pause >= 10]$D12_asymmetry, alternative = 't')
-
-ggplot(D12_asymmetry[D12_pause >= 10 & peak > 70 & (peak - length) < -70], aes("D1", D1_asymmetry)) + geom_boxplot() +
-  geom_boxplot(aes("D12", D12_asymmetry)) + ylim(0,3)
 
 
 ### Gene ontology

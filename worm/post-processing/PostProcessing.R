@@ -12,26 +12,6 @@ for(i in 1:length(files1)) {
   assign(samples1[i], as.data.frame(lapply(paste0(dir1, files1[i]), read.delim, header = FALSE, stringsAsFactors = TRUE)))
 }
 
-dir2a <- "/Users/KevinStein/Desktop/Lab/Bioinformatics/ProfilingData/KCSJF08_Ce_daf/"
-files2a <- list.files(dir2a, pattern = "*.codon")
-samples2a <- sub("\\.codon", '', files2a)
-for(i in 1:length(files2a)) {
-  print(files2a[i])
-  assign(samples2a[i], as.data.frame(lapply(paste0(dir2a, files2a[i]), read.delim, header = FALSE, stringsAsFactors = TRUE)))
-}
-
-dir2b <- "/Users/KevinStein/Desktop/Lab/Bioinformatics/ProfilingData/KCSJF09_Ce_daf/"
-files2b <- list.files(dir2b, pattern = "*.codon")
-samples2b <- sub("\\.codon", '', files2b)
-for(i in 1:length(files2b)) {
-  print(files2b[i])
-  assign(samples2b[i], as.data.frame(lapply(paste0(dir2b, files2b[i]), read.delim, header = FALSE, stringsAsFactors = TRUE)))
-}
-
-test <- append(files1, files2a)
-files <- append(test, files2b)
-samples <- sub("\\.codon", '', files)
-
 dfs <- Filter(function(x) is(x, "data.frame"), mget(ls()))
 
 
@@ -62,12 +42,7 @@ ce_dt <- readRDS("ce_dt.rds")
 N2samples <- samples[c(1:12,31:39,58:66)]
 N2samplesA <- samples[c(1,4,7,10,58,61,64)]
 N2_dt <- ce_dt[, c(1:19,38:46,65:73)]
-N2_dtA <- ce_dt[, c(1:8,11,14,17,65,68,71)]
 #saveRDS(N2_dt, "N2_dt.rds")
-#saveRDS(N2_dtA, "N2_dtA.rds")
-daf_samples <- samples[c(13:30,40:57)]
-daf_dt <- ce_dt[, c(1:7,20:37,47:64)]
-#saveRDS(daf_dt, "daf_dt.rds")
 
 
 ### Subset to just A-site alignment ###
@@ -76,9 +51,6 @@ N2_dtA <- N2_dt[, c(1:8,11,14,17,20,23,26,29,32,35)]
 N2samplesA <- names(N2_dtA[, c(8:11)])
 saveRDS(N2_dtA, "N2_dtA.rds")
 
-daf_dtA <- ce_dt[, c(1:7,20,23,26,29,32,35,47,50,53,56,59,62)]
-daf_samplesA <- names(daf_dtA[, c(8:19)])
-saveRDS(daf_dtA, "daf_dtA.rds")
 
 
 ### Calculate rpc for each orf after excluding first and last 30 sense codons (Rachel Green excludes 100nt in the eIF5A paper)
@@ -97,21 +69,6 @@ for(i in N2samples) {
 }
 saveRDS(N2_dt, "N2_dt.rds")
 
-daf_dt <- readRDS("daf_dt.rds")
-temp <- daf_dt[position > 30 & stopdist < -30]
-for(i in daf_samples) {
-  print(i)
-  temp[, sum1 := lapply(.SD[, ..i], sum), by = orf]
-  temp[, rpc1 := lapply(.SD[, ..i], mean), by = orf]
-  temp[, med1 := lapply(.SD[, ..i], median), by = orf]
-  gene <- cbind(match(daf_dt$orf, temp$orf))
-  daf_dt <- cbind(daf_dt, sum1 = temp[gene]$sum1)
-  daf_dt <- cbind(daf_dt, rpc1 = temp[gene]$rpc1)
-  daf_dt <- cbind(daf_dt, med1 = temp[gene]$med1)
-  setnames(daf_dt, "rpc1", paste0(i,"_rpc"))
-  setnames(daf_dt, "sum1", paste0(i,"_sum"))
-}
-saveRDS(daf_dt, "daf_dt.rds")
 
 N2_dtA <- N2_dtA[, c(1:14)]
 N2samplesA <- names(N2_dtA[, c(8:14)])
@@ -142,23 +99,6 @@ for(i in N2samplesA) {
 }
 saveRDS(N2_dtA, "N2_dtA.rds")
 
-daf_dtA <- readRDS("daf_dtA.rds")
-temp <- daf_dtA[position > 30 & stopdist < -30]
-for(i in daf_samplesA) {
-  print(i)
-  temp[, sum1 := lapply(.SD[, ..i], sum), by = orf]
-  temp[, rpc1 := lapply(.SD[, ..i], mean), by = orf]
-  temp[, med1 := lapply(.SD[, ..i], median), by = orf]
-  gene <- cbind(match(daf_dtA$orf, temp$orf))
-  daf_dtA <- cbind(daf_dtA, sum1 = temp[gene]$sum1)
-  daf_dtA <- cbind(daf_dtA, rpc1 = temp[gene]$rpc1)
-  daf_dtA <- cbind(daf_dtA, med1 = temp[gene]$med1)
-  setnames(daf_dtA, "rpc1", paste0(i,"_rpc"))
-  setnames(daf_dtA, "sum1", paste0(i,"_sum"))
-  setnames(daf_dtA, "med1", paste0(i,"_med"))
-}
-saveRDS(daf_dtA, "daf_dtA.rds")
-
 
 ### Calculate rpm, pause score, and z-score ###
 N2_dt <- readRDS("N2_dt.rds")
@@ -173,17 +113,6 @@ for(i in N2samples) {
 }
 saveRDS(N2_dt, "N2_dt.rds")
 
-daf_dt <- readRDS("daf_dt.rds")
-for(i in daf_samples) {
-  print(i)
-  daf_dt[, paste0(i,"_rpm") := (daf_dt[[i]] / sum(daf_dt[[i]])) * 10^6] # calculate rpm
-  daf_dt[, paste0(i,"_pause") := daf_dt[[i]] / daf_dt[[paste0(i,"_rpc")]]] # calculate pause
-  daf_dt[, Z := abs(daf_dt[[i]] - daf_dt[[paste0(i,"_rpc")]])]
-  daf_dt[, Z := median(Z), by = orf]
-  daf_dt[, Z  := (0.6745*(daf_dt[[i]] - daf_dt[[paste0(i,"_rpc")]])) / Z] # calculate z-score
-  setnames(daf_dt, "Z", paste0(i,"_Z"))
-}
-saveRDS(daf_dt, "daf_dt.rds")
 
 for(i in N2samplesA) {
   print(i)
@@ -196,18 +125,6 @@ for(i in N2samplesA) {
   #N2_dtA[, paste0(i,"_Z") := (N2_dtA[[i]] - N2_dtA[[paste0(i,"_rpc")]]) / ((N2_dtA[[paste0(i,"_rpc")]])^(1/2))]
 }
 saveRDS(N2_dtA, "N2_dtA.rds")
-
-for(i in daf_samplesA) {
-  print(i)
-  daf_dtA[, paste0(i,"_rpm") := (daf_dtA[[i]] / sum(daf_dtA[[i]])) * 10^6] # calculate rpm
-  daf_dtA[, paste0(i,"_pause") := daf_dtA[[i]] / daf_dtA[[paste0(i,"_rpc")]]] # calculate pause
-  daf_dtA[, Z := abs(daf_dtA[[i]] - daf_dtA[[paste0(i,"_med")]])]
-  daf_dtA[, Z := median(Z), by = orf]
-  daf_dtA[, Z := (0.6745*(daf_dtA[[i]] - daf_dtA[[paste0(i,"_med")]])) / Z] # calculate z-score
-  setnames(daf_dtA, "Z", paste0(i,"_Zmad"))
-  daf_dtA[, paste0(i,"_Z") := (daf_dtA[[i]] - daf_dtA[[paste0(i,"_rpc")]]) / ((daf_dtA[[paste0(i,"_rpc")]])^(1/2))]
-}
-saveRDS(daf_dtA, "daf_dtA.rds")
 
 
 ### Add motif in active site ###

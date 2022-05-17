@@ -1,0 +1,39 @@
+﻿gene,name,GO,category
+YML121W,GTR1,GO:1904263,positive regulation of TORC1 signaling
+YGR163W,GTR2,GO:1904263,positive regulation of TORC1 signaling
+YKL176C,LST4,GO:1904263,positive regulation of TORC1 signaling
+YGR057C,LST7,GO:1904263,positive regulation of TORC1 signaling
+YDR128W,MTC5,GO:1904263,positive regulation of TORC1 signaling
+YGL008C,PMA1,GO:1904263,positive regulation of TORC1 signaling
+YOL138C,RTC1,GO:1904263,positive regulation of TORC1 signaling
+YBL104C,SEA4,GO:1904263,positive regulation of TORC1 signaling
+YLR208W,SEC13,GO:1904263,positive regulation of TORC1 signaling
+YGL100W,SEH1,GO:1904263,positive regulation of TORC1 signaling
+YDL077C,VAM6,GO:1904263,positive regulation of TORC1 signaling
+YOL078W,AVO1,GO:0031929,TOR signaling
+YMR068W,AVO2,GO:0031929,TOR signaling
+YHR186C,KOG1,GO:0031929,TOR signaling
+YHR082C,KSP1,GO:0031929,TOR signaling
+YNL006W,LST8,GO:0031929,TOR signaling
+YGL197W,MDS3,GO:0031929,TOR signaling
+YKR087C,OMA1,GO:0031929,TOR signaling
+YKR028W,SAP190,GO:0031929,TOR signaling
+YDL047W,SIT4,GO:0031929,TOR signaling
+YIL105C,SLM1,GO:0031929,TOR signaling
+YNL047C,SLM2,GO:0031929,TOR signaling
+YLR150W,STM1,GO:0031929,TOR signaling
+YMR028W,TAP42,GO:0031929,TOR signaling
+YPL180W,TCO89,GO:0031929,TOR signaling
+YPR040W,TIP41,GO:0031929,TOR signaling
+YJR066W,TOR1,GO:0031929,TOR signaling
+YKL203C,TOR2,GO:0031929,TOR signaling
+YER093C,TSC11,GO:0031929,TOR signaling
+YDR200C,VPS64,GO:0031929,TOR signaling
+YPR185W,ATG13,,phosphorylated residue
+YOL139C,CDC33,,phosphorylated residue
+YKL176C,LST4,,phosphorylated residue
+YDR005C,MAF1,,phosphorylated residue
+YHR205W,SCH9,,phosphorylated residue
+YNR006W,VPS27,,phosphorylated residue
+YKL126W,YPK1,,phosphorylated residue
+YBR028C,YPK3,,phosphorylated residue
