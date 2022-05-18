@@ -81,16 +81,6 @@ plot <- plot + theme_classic(20) + labs(y = "Day 4 pause score", x = "Day 0 paus
         panel.border = element_rect(color = "black", fill = NA, size = 1), axis.line = element_blank(), axis.text = element_text(size = 20, color = "black"))
 ggsave("/Users/KevinStein/Desktop/allSites_yeast.pdf", plot, width = 6, height = 4, dpi = 300, useDingbats = F)
 
-plot <- ggplot(pauseMean, aes(D0, D4)) +  
-  geom_abline(slope = 1, intercept = 0, color = "gray75", linetype = "dashed", size = 1) +
-  geom_point(size = 3, color = "#E7A427", alpha = 0.6) +
-  xlim(0.5,1.7) + ylim(0.5,1.7)
-plot <- plot + theme_classic(20) + labs(y = "Day 4 pause score", x = "Day 0 pause score") +
-  theme(legend.position = "none", 
-        panel.border = element_rect(color = "black", fill = NA, size = 1), axis.line = element_blank(), axis.text = element_text(size = 20, color = "black"))
-ggsave("/Users/KevinStein/Desktop/allSites_yeastPoints.pdf", plot, width = 6, height = 4, dpi = 300, useDingbats = F)
-cor(pauseMean$D0, pauseMean$D4)
-
 plot <- ggplot(pauseMeanCodon[residue != 'X'], aes(D0, D4, color = residue)) +  
   geom_abline(slope = 1, intercept = 0, color = "gray75", linetype = "dashed", size = 1) +
   #geom_point(size = 2.5, alpha = 0.6) +
@@ -100,27 +90,6 @@ plot <- plot + theme_classic(20) + labs(y = "Day 4 pause score", x = "Day 0 paus
   theme(legend.position = "none", 
         panel.border = element_rect(color = "black", fill = NA, size = 1), axis.line = element_blank(), axis.text = element_text(size = 20, color = "black"))
 ggsave("/Users/KevinStein/Desktop/allSites_yeastPointsCodons.pdf", plot, width = 6, height = 4, dpi = 300, useDingbats = F)
-
-
-
-plot <- ggplot(pauseMean, aes(D0_1, D0_2, color = aa)) +  
-  geom_abline(slope = 1, intercept = 0, color = "gray75", linetype = "dashed", size = 1) +
-  geom_text(label = aa, size = 5) +
-  xlim(0.5,1.7) + ylim(0.5,1.7)
-plot <- plot + theme_classic(20) + labs(y = "Day0, rep2 pause score", x = "Day 0, rep 1 pause score") +
-  theme(legend.position = "none", 
-        panel.border = element_rect(color = "black", fill = NA, size = 1), axis.line = element_blank(), axis.text = element_text(size = 20, color = "black"))
-ggsave("/Users/KevinStein/Desktop/allSites_Day0Replicates_yeastResidues.pdf", plot, width = 6, height = 4, dpi = 300, useDingbats = F)
-
-plot <- ggplot(pauseMean, aes(D4_1, D4_2, color = aa)) +  
-  geom_abline(slope = 1, intercept = 0, color = "gray75", linetype = "dashed", size = 1) +
-  geom_text(label = aa, size = 5) +
-  xlim(0.5,1.7) + ylim(0.5,1.7)
-plot <- plot + theme_classic(20) + labs(y = "Day4, rep2 pause score", x = "Day 4, rep 1 pause score") +
-  theme(legend.position = "none", 
-        panel.border = element_rect(color = "black", fill = NA, size = 1), axis.line = element_blank(), axis.text = element_text(size = 20, color = "black"))
-ggsave("/Users/KevinStein/Desktop/allSites_Day4Replicates_yeastResidues.pdf", plot, width = 6, height = 4, dpi = 300, useDingbats = F)
-
 
 plot <- ggplot(pauseMeanCodon[residue != 'X'], aes(D0_1, D0_2)) +  
   geom_abline(slope = 1, intercept = 0, color = "gray75", linetype = "dashed", size = 1) +
@@ -140,8 +109,6 @@ plot <- plot + theme_classic(20) + labs(y = "Day4, rep2 pause score", x = "Day 4
   theme(legend.position = "none", 
         panel.border = element_rect(color = "black", fill = NA, size = 1), axis.line = element_blank(), axis.text = element_text(size = 20, color = "black"))
 ggsave("/Users/KevinStein/Desktop/allSites_Day4Replicates_yeast.pdf", plot, width = 6, height = 4, dpi = 300, useDingbats = F)
-
-
 
 plot <- ggplot(pause, aes(D0, D4, color = aa)) + geom_text(label = aa, size = 5) + xlim(0.6,1.7) + ylim(0.6,1.7) +
   geom_abline(slope = 1, intercept = 0, color = "gray75", linetype = "dashed")
