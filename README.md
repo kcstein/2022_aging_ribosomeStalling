@@ -14,7 +14,7 @@ Code for processing and analyzing data from chronologically aged *S. cerevisiae*
 Import codon counts tables, calculate relevant metrics by position and gene, and identify age-dependent stall sites.
 
 ### gene_analysis:
-**DESeq.R**Uses DESeq2 to determine significantly enriched genes.
+**DESeq.R** Uses DESeq2 to determine significantly enriched genes.<br>
 **Ubiquitination.R** Examines the association of age-dependent ribosome stalling with co-translation ubiquitination using data from [Duttler, et al. Mol Cell 2013](https://pubmed.ncbi.nlm.nih.gov/23583075/).
 
 ### ribosome_pausing:
