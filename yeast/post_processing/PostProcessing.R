@@ -19,39 +19,23 @@ dfs <- Filter(function(x) is(x, "data.frame"), mget(ls()))
 sc_dt <- data.table(orf = dfs[[1]][, 1],
                     position = dfs[[1]][, 2],
                     codon = dfs[[1]][, 3]) 
-setkeyv(sc_dt, c("orf"))
 orfs <- unique(sc_dt[, 1])
 sc_dt[, length := (length(position) - 15), by = orf] # subtract flanking 7 codons and stop codon
 sc_dt[, stopdist := position - (length + 1)] # stop codon is at stopdist == 0
 sc_dt[, ID := as.character(paste(orf, position, sep = "_"))]
 
-scCR_dt <- data.table(orf = dfsCR[[1]][, 1],
-                    position = dfsCR[[1]][, 2],
-                    codon = dfsCR[[1]][, 3]) 
-setkeyv(scCR_dt, c("orf"))
-orfsCR <- unique(scCR_dt[, 1])
-scCR_dt[, length := (length(position) - 15), by = orf] # subtract flanking 7 codons and stop codon
-scCR_dt[, stopdist := position - (length + 1)] # stop codon is at stopdist == 0
-scCR_dt[, ID := as.character(paste(orf, position, sep = "_"))]
 
 # Add residue
 codon_table <- as.data.table(read.csv("/Users/KevinStein/Desktop/Lab/Bioinformatics/ReferenceData/codon_table.csv"))
 i <- cbind(match(sc_dt$codon, codon_table$codon))
 sc_dt <- cbind(sc_dt, residue = codon_table[i]$residue)
-i <- cbind(match(scCR_dt$codon, codon_table$codon))
-scCR_dt <- cbind(scCR_dt, residue = codon_table[i]$residue)
+
 
 # Add raw counts
 for(i in 1:length(samples)) {
   print(samples[i])
   sc_dt <- cbind(sc_dt, j = dfs[[i]][,4])
   setnames(sc_dt, "j", samples[i])
-}
-
-for(i in 1:length(samplesCR)) {
-  print(samplesCR[i])
-  scCR_dt <- cbind(scCR_dt, j = dfsCR[[i]][,4])
-  setnames(scCR_dt, "j", samplesCR[i])
 }
 
 
@@ -84,37 +68,23 @@ for(i in samplesA) {
   temp[, sum1 := lapply(.SD[, ..i], sum), by = orf]
   temp[, coverage1 := length(which(.SD[, ..i] != 0)) / (length - 40), by = orf]
   temp[, rpc1 := lapply(.SD[, ..i], mean), by = orf]
-  temp[, sd1 := lapply(.SD[, ..i], sd), by = orf]
-  temp[, Z1 := scale(.SD[, ..i], center = TRUE, scale = TRUE), by = orf]
-  #temp[, med1 := lapply(.SD[, ..i], median), by = orf]
   gene <- cbind(match(sc_dtA$orf, temp$orf))
   sc_dtA <- cbind(sc_dtA, sum1 = temp[gene]$sum1)
   sc_dtA <- cbind(sc_dtA, coverage1 = temp[gene]$coverage1)
   sc_dtA <- cbind(sc_dtA, rpc1 = temp[gene]$rpc1)
-  sc_dtA <- cbind(sc_dtA, sd1 = temp[gene]$sd1)
-  ID1 <- cbind(match(sc_dtA$ID, temp$ID))
-  sc_dtA <- cbind(sc_dtA, Z1 = temp[ID1]$Z1)
-  #sc_dtA <- cbind(sc_dtA, med1 = temp[gene]$med1)
   setnames(sc_dtA, "sum1", paste0(i,"_sum"))
   setnames(sc_dtA, "coverage1", paste0(i,"_coverage"))
   setnames(sc_dtA, "rpc1", paste0(i,"_rpc"))
-  setnames(sc_dtA, "sd1", paste0(i,"_sd"))
-  setnames(sc_dtA, "Z1", paste0(i,"_Z"))
-  #setnames(sc_dtA, "med1", paste0(i,"_med"))
 }
 saveRDS(sc_dtA, "sc_dtA.rds")
 
 
-### Calculate rpm, pause score, and z-score ###
+### Calculate rpm and pause score ###
 sc_dt <- readRDS("sc_dt.rds")
 for(i in samples) {
   print(i)
   sc_dt[, paste0(i,"_rpm") := (sc_dt[[i]] / sum(sc_dt[[i]])) * 10^6] # calculate rpm
   sc_dt[, paste0(i,"_pause") := sc_dt[[i]] / sc_dt[[paste0(i,"_rpc")]]] # calculate pause
-  #sc_dt[, Z := abs(sc_dt[[i]] - sc_dt[[paste0(i,"_rpc")]])]
-  #sc_dt[, Z := median(Z), by = orf]
-  #sc_dt[, Z  := (0.6745*(sc_dt[[i]] - sc_dt[[paste0(i,"_rpc")]])) / Z] # calculate z-score
-  #setnames(sc_dt, "Z", paste0(i,"_Z"))
 }
 saveRDS(sc_dt, "sc_dt.rds")
 
@@ -124,10 +94,6 @@ for(i in samplesA) {
   print(i)
   sc_dtA[, paste0(i,"_rpm") := (sc_dtA[[i]] / sum(sc_dtA[[i]])) * 10^6] # calculate rpm
   sc_dtA[, paste0(i,"_pause") := sc_dtA[[i]] / sc_dtA[[paste0(i,"_rpc")]]] # calculate pause
-  #sc_dtA[, Z := abs(sc_dtA[[i]] - sc_dtA[[paste0(i,"_med")]])]
-  #sc_dtA[, Z := median(Z), by = orf]
-  #sc_dtA[, Z := (0.6745*(sc_dtA[[i]] - sc_dtA[[paste0(i,"_med")]])) / Z] # calculate z-score
-  #setnames(sc_dtA, "Z", paste0(i,"_Z"))
 }
 saveRDS(sc_dtA, "sc_dtA.rds")
 

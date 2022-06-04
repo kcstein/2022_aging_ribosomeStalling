@@ -19,7 +19,6 @@ dfs <- Filter(function(x) is(x, "data.frame"), mget(ls()))
 ce_dt <- data.table(orf = dfs[[1]][, 1],
                     position = dfs[[1]][, 2],
                     codon = dfs[[1]][, 3]) 
-setkeyv(ce_dt, c("orf"))
 orfs <- unique(ce_dt[, 1])
 ce_dt[, length := (length(position) - 15), by = orf] # subtract flanking 7 codons and stop codon
 ce_dt[, stopdist := position - (length + 1)] # stop codon is at stopdist == 0
@@ -79,37 +78,23 @@ for(i in N2samplesA) {
   temp[, sum1 := lapply(.SD[, ..i], sum), by = orf]
   temp[, coverage1 := length(which(.SD[, ..i] != 0)) / (length - 40), by = orf]
   temp[, rpc1 := lapply(.SD[, ..i], mean), by = orf]
-  temp[, sd1 := lapply(.SD[, ..i], sd), by = orf]
-  temp[, Z1 := scale(.SD[, ..i], center = TRUE, scale = TRUE), by = orf]
-  #temp[, med1 := lapply(.SD[, ..i], median), by = orf]
   gene <- cbind(match(N2_dtA$orf, temp$orf))
   N2_dtA <- cbind(N2_dtA, sum1 = temp[gene]$sum1)
   N2_dtA <- cbind(N2_dtA, coverage1 = temp[gene]$coverage1)
   N2_dtA <- cbind(N2_dtA, rpc1 = temp[gene]$rpc1)
-  N2_dtA <- cbind(N2_dtA, sd1 = temp[gene]$sd1)
-  ID1 <- cbind(match(N2_dtA$ID, temp$ID))
-  N2_dtA <- cbind(N2_dtA, Z1 = temp[ID1]$Z1)
-  #N2_dtA <- cbind(N2_dtA, med1 = temp[gene]$med1)
   setnames(N2_dtA, "sum1", paste0(i,"_sum"))
   setnames(N2_dtA, "coverage1", paste0(i,"_coverage"))
   setnames(N2_dtA, "rpc1", paste0(i,"_rpc"))
-  setnames(N2_dtA, "sd1", paste0(i,"_sd"))
-  setnames(N2_dtA, "Z1", paste0(i,"_Z"))
-  #setnames(N2_dtA, "med1", paste0(i,"_med"))
 }
 saveRDS(N2_dtA, "N2_dtA.rds")
 
 
-### Calculate rpm, pause score, and z-score ###
+### Calculate rpm and pause score ###
 N2_dt <- readRDS("N2_dt.rds")
 for(i in N2samples) {
   print(i)
   N2_dt[, paste0(i,"_rpm") := (N2_dt[[i]] / sum(N2_dt[[i]])) * 10^6] # calculate rpm
   N2_dt[, paste0(i,"_pause") := N2_dt[[i]] / N2_dt[[paste0(i,"_rpc")]]] # calculate pause
-  N2_dt[, Z := abs(N2_dt[[i]] - N2_dt[[paste0(i,"_rpc")]])]
-  N2_dt[, Z := median(Z), by = orf]
-  N2_dt[, Z  := (0.6745*(N2_dt[[i]] - N2_dt[[paste0(i,"_rpc")]])) / Z] # calculate z-score
-  setnames(N2_dt, "Z", paste0(i,"_Z"))
 }
 saveRDS(N2_dt, "N2_dt.rds")
 
@@ -118,11 +103,6 @@ for(i in N2samplesA) {
   print(i)
   N2_dtA[, paste0(i,"_rpm") := (N2_dtA[[i]] / sum(N2_dtA[[i]])) * 10^6] # calculate rpm
   N2_dtA[, paste0(i,"_pause") := N2_dtA[[i]] / N2_dtA[[paste0(i,"_rpc")]]] # calculate pause
-  #N2_dtA[, Z := abs(N2_dtA[[i]] - N2_dtA[[paste0(i,"_med")]])]
-  #N2_dtA[, Z := median(Z), by = orf]
-  #N2_dtA[, Z := (0.6745*(N2_dtA[[i]] - N2_dtA[[paste0(i,"_med")]])) / Z] # calculate z-score
-  #setnames(N2_dtA, "Z", paste0(i,"_Z"))
-  #N2_dtA[, paste0(i,"_Z") := (N2_dtA[[i]] - N2_dtA[[paste0(i,"_rpc")]]) / ((N2_dtA[[paste0(i,"_rpc")]])^(1/2))]
 }
 saveRDS(N2_dtA, "N2_dtA.rds")
 
